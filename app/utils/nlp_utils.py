@@ -14,7 +14,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def chunk_text(text, max_tokens=1500):
+def chunk_text(text, max_tokens=1000):
     """
     Chunk text into parts that fit within the token limit.
     """
@@ -200,7 +200,7 @@ def generate_tailored_resume_with_chunking(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1500,
-            temperature=0.3,
+            temperature=0.1,
         )
         tailored_content.append(response["choices"][0]["message"]["content"])
 

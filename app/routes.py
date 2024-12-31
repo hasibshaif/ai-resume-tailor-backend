@@ -13,6 +13,10 @@ api = Blueprint("api", __name__)
 def home():
     return jsonify({"message": "Welcome to the Resume Tailor API!"})
 
+@api.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "ok"}), 200
+
 @api.route("/upload-resume", methods=["POST"])
 def upload_resume():
     user_id = request.headers.get("userId")
@@ -21,10 +25,15 @@ def upload_resume():
 
     file = request.files.get("resume")
     if not file or file.filename.split(".")[-1].lower() != "docx":
-        return (
-            jsonify({"error": "Invalid file format. Only .docx files are allowed."}),
-            400,
-        )
+        return jsonify({"error": "Invalid file format. Only .docx files are allowed."}), 400
+
+    if file.mimetype != "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        return jsonify({"error": "Invalid MIME type. Please upload a .docx file."}), 400
+
+    max_file_size = 2 * 1024 * 1024 
+    if len(file.read()) > max_file_size:
+        return jsonify({"error": "File size exceeds the 2MB limit."}), 400
+    file.seek(0) 
 
     original_filename = file.filename
     s3_key = f"{user_id}/master_resume/{original_filename}"

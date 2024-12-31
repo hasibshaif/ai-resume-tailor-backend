@@ -9,6 +9,9 @@ from app.utils.s3_utils import upload_to_s3, delete_from_s3
 
 api = Blueprint("api", __name__)
 
+@api.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Welcome to the Resume Tailor API!"})
 
 @api.route("/upload-resume", methods=["POST"])
 def upload_resume():
